@@ -1,7 +1,7 @@
 ### learn-kana
 a clickable Japanese kana table written in Python 3 and tkinter 
 
-<img src="./imgs/lk.png" width="600">
+<img src="./imgs/lk.png" width="700">
 
 When people at the office think, "Oh, I'd better find someone to write a user interface.", they probably don't think of me first. Recently however, I was asked to write the control, data-acq, and data-reduction code for a spectrometer. The job came with the specification that there should be an easy-to-use graphical interface. Naturally I thought of Python, Matplotlib, and Tkinter.
 
