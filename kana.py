@@ -1,12 +1,14 @@
 from tkinter import Tk, Button
 from tkinter.font import Font
 from copy import deepcopy
+import random
 
-tsz = 25 # the default text size
+tsz = 20 # the default text size
 
 class Board:
   
     def __init__(self,other=None):
+        
         self.hchars = [['ぱ','ば','だ','ざ','が','ん','わ','ら','や','ま','は','な','た','さ','か','あ'],
                        ['ぴ','び','ぢ','じ','ぎ',' ',' ','り',' ','み','ひ','に','ち','し','き','い'],
                        ['ぷ','ぶ','づ','ず','ぐ',' ',' ','る','ゆ','む','ふ','ぬ','っ','す','く','う'],
@@ -25,12 +27,6 @@ class Board:
                        ['pe','be','de','ze','ge','','','re','','me','he','ne','te','se','ke','e'],
                        ['po','bo','do','zo','go','','o(wo)','ro','yo','mo','ho','no','to','so','ko','o']]
 
-        self.rszlists = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                        [1,1,2.7,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                        [1,1,2.7,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                        [1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1]]
-        #self.size = 3
         self.nrows = 5
         self.ncols = 16
         self.hfields = {}
@@ -41,10 +37,14 @@ class Board:
         for y in range(self.nrows):
             for x in range(self.ncols):
                 self.kfields[y,x] = self.kchars[y][x]
+        self.rfields = {}
+        for y in range(self.nrows):
+            for x in range(self.ncols):
+                self.rfields[y,x] = self.rchars[y][x]
+        
         # copy constructor
         if other:
             self.__dict__ = deepcopy(other.__dict__)
-
 
 class Hiragana:
 
@@ -53,50 +53,87 @@ class Hiragana:
         self.app.title('Learn Kana')
         self.app.resizable(width=False, height=False)
         self.board = Board()
-        self.kana = 'h'
-        self.width = 2
+        self.kana = 'i'
+        self.width = 5
         self.font = Font(family="Hack", size=tsz)
         self.foreground = 'white'
 
-        # hiragana/katakana switcher button
+        # switch buttons
         handler = lambda: self.switch_kana()
-        self.tbutton = Button(self.app, text='ひらがな', bg='black', fg='white',
+        self.button1 = Button(self.app, text='かな - ろーまじ', bg='crimson', fg='white',
                               font=self.font, command=handler)
-        self.tbutton.grid(row=0, column=0, columnspan=self.board.ncols, sticky="WE")
+        self.button1.grid(row=0, column=0, columnspan=int((self.board.ncols/2)), sticky="WE")
+        handler = lambda: self.switch_roma()
+        self.button2 = Button(self.app, text='ろーまじ - かな', bg='crimson', fg='white',
+                              font=self.font, command=handler)
+        self.button2.grid(row=0, column=int((self.board.ncols/2)), columnspan=self.board.ncols, sticky="WE")
 
         # array of character buttons
         self.buttons = {}
-        for y,x in self.board.hfields:
-            handler = lambda y=y,x=x: self.reveal(y,x)
-            button = Button(self.app, command=handler, font=self.font, width=self.width, height=1)
-            button.grid(row=y+1, column=x)
-            self.buttons[y,x] = button
-        self.update()
+        for y in range(self.board.nrows):
+            for x in range(self.board.ncols):
+                handler = lambda y=y,x=x: self.reveal(y,x)
+                button = Button(self.app, bg='lightsalmon', command=handler, font=self.font, width=self.width, height=2)
+                button.grid(row=y+1, column=x)
+                self.buttons[y,x] = button
       
     def switch_kana(self):
         if self.kana == 'h':
             self.kana = 'k'
-            self.tbutton['text'] = 'かたかな'
+            self.button1['text'] = 'かたかな - ろーまじ'
         else:
             self.kana = 'h'
-            self.tbutton['text'] = 'ひらがな'
+            self.button1['text'] = 'ひらがな - ろーまじ'
+        self.button2['text'] = 'ろーまじ'
+        self.update()
+        
+    def switch_roma(self):
+        if self.kana == 'th':
+            self.kana = 'tk'
+            self.button2['text'] = 'ろーまじ - かたかな'
+        else:
+            self.kana = 'th'
+            self.button2['text'] = 'ろーまじ - ひらがな'
+        self.button1['text'] = 'かな'
         self.update()
     
     def reveal(self,y,x):
         self.board = Board()
-        self.buttons[y,x]['text'] = self.board.rchars[y][x]
-        self.buttons[y,x]['width'] = int(round(self.width*self.board.rszlists[y][x]))
-        self.app.after(1000, self.update)
+        if self.kana == 'h' or self.kana == 'k':
+            self.buttons[y,x]['text'] = self.board.rchars[y][x]
+            self.buttons[y,x]['width'] = int(round(self.width))
+            self.buttons[y,x]['bg'] = 'darksalmon'
+            self.app.after(1000, self.update)
+        elif self.kana == 'th':
+            self.buttons[y,x]['text'] = self.board.hchars[y][x]
+            self.buttons[y,x]['width'] = int(round(self.width))
+            self.buttons[y,x]['bg'] = 'darksalmon'
+            self.app.after(1000, self.update)
+        elif self.kana == 'tk':
+            self.buttons[y,x]['text'] = self.board.kchars[y][x]
+            self.buttons[y,x]['width'] = int(round(self.width))
+            self.buttons[y,x]['bg'] = 'darksalmon'
+            self.app.after(1000, self.update)
+        else:
+            self.buttons[y,x]['text'] = random.choice(['|･ω･)','|_・)','(¯︶¯)','(⁀ᗢ⁀)','(^ ω ^)'])
+            self.buttons[y,x]['width'] = int(round(self.width))
+            self.buttons[y,x]['bg'] = 'darksalmon'
+            self.app.after(1000, self.update)            
      
     def update(self):
         for (y,x) in self.board.hfields:
             if self.kana == 'k':
                 text = self.board.kfields[y,x]
-            else:
+            elif self.kana == 'h':
                 text = self.board.hfields[y,x]
+            elif self.kana == 'th' or self.kana == 'tk':
+                text = self.board.rfields[y,x]
+            else:
+                text = ''
             self.buttons[y,x]['text'] = text
             self.buttons[y,x]['width'] = self.width
-            if self.buttons[y,x]['text'] in ['', ' ']:
+            self.buttons[y,x]['bg'] = 'lightsalmon'
+            if self.buttons[y,x]['text'] in [' ']:
                 self.buttons[y,x]['state'] = 'disabled' 
     
     def mainloop(self):
