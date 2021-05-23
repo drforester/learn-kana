@@ -7,4 +7,4 @@ When people at the office think, "Oh, I'd better find someone to write a user in
 
 That project was so much fun that, on my own time, I decided to undertake some small tkinter projects, just to get more practice. This is an easy but fun one. It is intended for the beginning Japanese language student, like me, who wants to learn the two character types called "kana": hiragana, and katakana. I hope that it will be useful for memorization practice and as a reference when reading.  
 
-Update: Thanks @ipekguler for the the awesome additons. I especially love that unintialized buttons now show randomly chosen faces!
+Update: Thanks @ipekguler for the the awesome additions. I especially love that unintialized buttons now show randomly chosen faces!
